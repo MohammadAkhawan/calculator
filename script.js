@@ -26,6 +26,14 @@ const number0BtnElement = document.querySelector("#number0");
 const modBtnElement = document.querySelector("#modular");
 const equalBtnElement = document.querySelector("#equal");
 
+const operators = {
+    "+": (a, b) => a + b,
+    "-": (a, b) => a - b,
+    "*": (a, b) => a * b,
+    "/": (a, b) => a / b,
+    mod: (a, b) => a % b,
+};
+
 const resetThePrinter = () => {
     printerSectionElement.textContent = "0";
 };
@@ -34,14 +42,33 @@ const clearThePrinter = () => {
     printerSectionElement.textContent = "";
 };
 
+clearBtnElement.addEventListener("click", resetThePrinter);
+
 const printTheElement = (event) => {
     if (printerSectionElement.textContent === "0") {
         clearThePrinter();
     }
-    printerSectionElement.textContent += event.target.textContent;
+    switch (event.target.textContent) {
+        case "/":
+            printerSectionElement.textContent += " / ";
+            break;
+        case "*":
+            printerSectionElement.textContent += " * ";
+            break;
+        case "-":
+            printerSectionElement.textContent += " - ";
+            break;
+        case "+":
+            printerSectionElement.textContent += " + ";
+            break;
+        case "mod":
+            printerSectionElement.textContent += " mod ";
+            break;
+        default:
+            printerSectionElement.textContent += event.target.textContent;
+            break;
+    }
 };
-
-clearBtnElement.addEventListener("click", resetThePrinter);
 
 leftParenthesesBtnElement.addEventListener("click", (e) => printTheElement(e));
 rightParenthesesBtnElement.addEventListener("click", (e) => printTheElement(e));
@@ -61,3 +88,16 @@ plusBtnElement.addEventListener("click", (e) => printTheElement(e));
 dotBtnElement.addEventListener("click", (e) => printTheElement(e));
 number0BtnElement.addEventListener("click", (e) => printTheElement(e));
 modBtnElement.addEventListener("click", (e) => printTheElement(e));
+
+const calculate = () => {
+    const requestedCalculation = printerSectionElement.textContent;
+    const splitMathPhrase = requestedCalculation.split(" ");
+    const a = splitMathPhrase[0];
+    const op = splitMathPhrase[1];
+    const b = splitMathPhrase[2];
+    const calculationOperator = operators[op];
+    const answer = calculationOperator(Number(a), Number(b));
+    printerSectionElement.textContent = answer.toString();
+};
+
+equalBtnElement.addEventListener("click", calculate);
