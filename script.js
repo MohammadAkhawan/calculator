@@ -26,6 +26,8 @@ const number0BtnElement = document.querySelector("#number0");
 const modBtnElement = document.querySelector("#modular");
 const equalBtnElement = document.querySelector("#equal");
 
+let calculated = false;
+
 const operators = {
     "+": (a, b) => a + b,
     "-": (a, b) => a - b,
@@ -56,8 +58,16 @@ const printTheElement = (event) => {
             printerSectionElement.textContent += " * ";
             break;
         case "-":
-            printerSectionElement.textContent += " - ";
-            break;
+            if (
+                printerSectionElement.textContent === "" ||
+                printerSectionElement.textContent.at(-1) === " "
+            ) {
+                printerSectionElement.textContent += "-";
+                break;
+            } else {
+                printerSectionElement.textContent += " - ";
+                break;
+            }
         case "+":
             printerSectionElement.textContent += " + ";
             break;
@@ -65,6 +75,10 @@ const printTheElement = (event) => {
             printerSectionElement.textContent += " mod ";
             break;
         default:
+            if (calculated) {
+                clearThePrinter();
+                calculated = false;
+            }
             printerSectionElement.textContent += event.target.textContent;
             break;
     }
@@ -93,11 +107,14 @@ const calculate = () => {
     const requestedCalculation = printerSectionElement.textContent;
     const splitMathPhrase = requestedCalculation.split(" ");
     const a = splitMathPhrase[0];
-    const op = splitMathPhrase[1];
+    const operator = splitMathPhrase[1];
     const b = splitMathPhrase[2];
-    const calculationOperator = operators[op];
+    console.log(splitMathPhrase);
+    const calculationOperator = operators[operator];
     const answer = calculationOperator(Number(a), Number(b));
+    console.log(answer);
     printerSectionElement.textContent = answer.toString();
+    calculated = true;
 };
 
 equalBtnElement.addEventListener("click", calculate);
