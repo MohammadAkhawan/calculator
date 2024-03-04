@@ -77,11 +77,11 @@ const printTheElement = (event) => {
         default:
             if (calculated) {
                 clearThePrinter();
-                calculated = false;
             }
             printerSectionElement.textContent += event.target.textContent;
             break;
     }
+    calculated = false;
 };
 
 leftParenthesesBtnElement.addEventListener("click", (e) => printTheElement(e));
@@ -103,18 +103,24 @@ dotBtnElement.addEventListener("click", (e) => printTheElement(e));
 number0BtnElement.addEventListener("click", (e) => printTheElement(e));
 modBtnElement.addEventListener("click", (e) => printTheElement(e));
 
-const calculate = () => {
-    const requestedCalculation = printerSectionElement.textContent;
-    const splitMathPhrase = requestedCalculation.split(" ");
+const printTheAnswerInString = (number) => {
+    printerSectionElement.textContent = number.toString();
+    calculated = true;
+};
+
+const makeOperandsAndOperator = (phrase) => {
+    const splitMathPhrase = phrase.split(" ");
     const a = splitMathPhrase[0];
     const operator = splitMathPhrase[1];
     const b = splitMathPhrase[2];
-    console.log(splitMathPhrase);
     const calculationOperator = operators[operator];
-    const answer = calculationOperator(Number(a), Number(b));
-    console.log(answer);
-    printerSectionElement.textContent = answer.toString();
-    calculated = true;
+    return calculationOperator(Number(a), Number(b));
+}
+
+const calculate = () => {
+    const requestedCalculation = printerSectionElement.textContent;
+    const answer = makeOperandsAndOperator(requestedCalculation);
+    printTheAnswerInString(answer);
 };
 
 equalBtnElement.addEventListener("click", calculate);
