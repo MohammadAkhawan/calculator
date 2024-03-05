@@ -108,14 +108,77 @@ const printTheAnswerInString = (number) => {
     calculated = true;
 };
 
+const simpleCalculation = (arr) => {
+    const a = arr[0];
+    const operator = arr[1];
+    const b = arr[2];
+    const calculationOperator = operators[operator];
+    console.log(calculationOperator(Number(a), Number(b)));
+    return calculationOperator(Number(a), Number(b));
+};
+
+const innerCalculation = (operatorString, arr) => {
+    const innerMathPhrase = arr.slice(
+        arr.indexOf(operatorString) - 1,
+        arr.indexOf(operatorString) + 2
+    );
+    arr.splice(
+        arr.indexOf(operatorString) - 1,
+        3,
+        simpleCalculation(innerMathPhrase).toString()
+    );
+};
+
+const calculationWithPriority = (largeMathPhrase) => {
+    while (largeMathPhrase.includes("*")) {
+        for (const element of largeMathPhrase) {
+            if (element === "*") {
+                innerCalculation(element, largeMathPhrase);
+                break;
+            }
+        }
+    }
+    while (largeMathPhrase.includes("/")) {
+        for (const element of largeMathPhrase) {
+            if (element === "/") {
+                innerCalculation(element, largeMathPhrase);
+                break;
+            }
+        }
+    }
+    while (largeMathPhrase.includes("+")) {
+        for (const element of largeMathPhrase) {
+            if (element === "+") {
+                innerCalculation(element, largeMathPhrase);
+                break;
+            }
+        }
+    }
+    while (largeMathPhrase.includes("-")) {
+        for (const element of largeMathPhrase) {
+            if (element === "-") {
+                innerCalculation(element, largeMathPhrase);
+                break;
+            }
+        }
+    }
+    while (largeMathPhrase.includes("mod")) {
+        for (const element of largeMathPhrase) {
+            if (element === "mod") {
+                innerCalculation(element, largeMathPhrase);
+                break;
+            }
+        }
+    }
+
+    return largeMathPhrase[0];
+};
+
 const makeOperandsAndOperator = (phrase) => {
     const splitMathPhrase = phrase.split(" ");
-    const a = splitMathPhrase[0];
-    const operator = splitMathPhrase[1];
-    const b = splitMathPhrase[2];
-    const calculationOperator = operators[operator];
-    return calculationOperator(Number(a), Number(b));
-}
+    const finalNumber = calculationWithPriority(splitMathPhrase);
+    return finalNumber;
+};
 
 const calculate = () => {
     const requestedCalculation = printerSectionElement.textContent;
