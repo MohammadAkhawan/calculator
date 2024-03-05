@@ -51,6 +51,12 @@ const printTheElement = (event) => {
         clearThePrinter();
     }
     switch (event.target.textContent) {
+        case "(":
+            printerSectionElement.textContent += "( ";
+            break;
+        case ")":
+            printerSectionElement.textContent += " )";
+            break;
         case "/":
             printerSectionElement.textContent += " / ";
             break;
@@ -103,8 +109,8 @@ dotBtnElement.addEventListener("click", (e) => printTheElement(e));
 number0BtnElement.addEventListener("click", (e) => printTheElement(e));
 modBtnElement.addEventListener("click", (e) => printTheElement(e));
 
-const printTheAnswerInString = (number) => {
-    printerSectionElement.textContent = number.toString();
+const printTheAnswerInString = (finalAnswer) => {
+    printerSectionElement.textContent = finalAnswer;
     calculated = true;
 };
 
@@ -129,54 +135,91 @@ const innerCalculation = (operatorString, arr) => {
     );
 };
 
-const calculationWithPriority = (largeMathPhrase) => {
-    while (largeMathPhrase.includes("*")) {
-        for (const element of largeMathPhrase) {
-            if (element === "*") {
-                innerCalculation(element, largeMathPhrase);
+const calculationWithParentheses = (splitOriginalMathPhrase) => {
+    let leftParenthesesIndex;
+    let rightParenthesesIndex;
+    let innerLevelMathPhrase = [];
+
+    while (splitOriginalMathPhrase.includes(")")) {
+        for (let i = splitOriginalMathPhrase.length - 1; i >= 0; i--) {
+            if (splitOriginalMathPhrase[i] === "(") {
+                leftParenthesesIndex = i;
                 break;
             }
         }
-    }
-    while (largeMathPhrase.includes("/")) {
-        for (const element of largeMathPhrase) {
-            if (element === "/") {
-                innerCalculation(element, largeMathPhrase);
+
+        for (const element of splitOriginalMathPhrase) {
+            if (element === ")") {
+                rightParenthesesIndex =
+                    splitOriginalMathPhrase.indexOf(element);
                 break;
             }
         }
-    }
-    while (largeMathPhrase.includes("+")) {
-        for (const element of largeMathPhrase) {
-            if (element === "+") {
-                innerCalculation(element, largeMathPhrase);
-                break;
-            }
-        }
-    }
-    while (largeMathPhrase.includes("-")) {
-        for (const element of largeMathPhrase) {
-            if (element === "-") {
-                innerCalculation(element, largeMathPhrase);
-                break;
-            }
-        }
-    }
-    while (largeMathPhrase.includes("mod")) {
-        for (const element of largeMathPhrase) {
-            if (element === "mod") {
-                innerCalculation(element, largeMathPhrase);
-                break;
-            }
-        }
+
+        innerLevelMathPhrase = splitOriginalMathPhrase.slice(
+            leftParenthesesIndex + 1,
+            rightParenthesesIndex
+        );
+
+        splitOriginalMathPhrase.splice(
+            leftParenthesesIndex,
+            innerLevelMathPhrase.length + 2,
+            calculationWithPriority(innerLevelMathPhrase)
+        );
+        console.log(splitOriginalMathPhrase);
     }
 
-    return largeMathPhrase[0];
+    return calculationWithPriority(splitOriginalMathPhrase);
+};
+
+const calculationWithPriority = (splitLargeMathPhrase) => {
+    while (splitLargeMathPhrase.includes("*")) {
+        for (const element of splitLargeMathPhrase) {
+            if (element === "*") {
+                innerCalculation(element, splitLargeMathPhrase);
+                break;
+            }
+        }
+    }
+    while (splitLargeMathPhrase.includes("/")) {
+        for (const element of splitLargeMathPhrase) {
+            if (element === "/") {
+                innerCalculation(element, splitLargeMathPhrase);
+                break;
+            }
+        }
+    }
+    while (splitLargeMathPhrase.includes("+")) {
+        for (const element of splitLargeMathPhrase) {
+            if (element === "+") {
+                innerCalculation(element, splitLargeMathPhrase);
+                break;
+            }
+        }
+    }
+    while (splitLargeMathPhrase.includes("-")) {
+        for (const element of splitLargeMathPhrase) {
+            if (element === "-") {
+                innerCalculation(element, splitLargeMathPhrase);
+                break;
+            }
+        }
+    }
+    while (splitLargeMathPhrase.includes("mod")) {
+        for (const element of splitLargeMathPhrase) {
+            if (element === "mod") {
+                innerCalculation(element, splitLargeMathPhrase);
+                break;
+            }
+        }
+    }
+    console.log(splitLargeMathPhrase[0]);
+    return splitLargeMathPhrase[0];
 };
 
 const makeOperandsAndOperator = (phrase) => {
     const splitMathPhrase = phrase.split(" ");
-    const finalNumber = calculationWithPriority(splitMathPhrase);
+    const finalNumber = calculationWithParentheses(splitMathPhrase);
     return finalNumber;
 };
 
